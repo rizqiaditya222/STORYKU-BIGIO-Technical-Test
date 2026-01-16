@@ -12,8 +12,8 @@ interface FilterModalProps {
 }
 
 const FilterModal = ({ isOpen, onClose, onFilter }: FilterModalProps) => {
-  const [category, setCategory] = React.useState('')
-  const [status, setStatus] = React.useState('')
+  const [category, setCategory] = React.useState('Financial')
+  const [status, setStatus] = React.useState('Publish')
 
 const categoryOptions = [
     { value: 'Financial', label: 'Financial' },
@@ -27,8 +27,8 @@ const statusOptions = [
 ]
 
   const handleReset = () => {
-    setCategory('')
-    setStatus('')
+    setCategory('Financial')
+    setStatus('Publish')
   }
 
   const handleFilter = () => {
@@ -70,6 +70,7 @@ const statusOptions = [
             value={category}
             onChange={setCategory}
             options={categoryOptions}
+            hideEmptyOption
           />
 
           <Dropdown
@@ -78,6 +79,7 @@ const statusOptions = [
             value={status}
             onChange={setStatus}
             options={statusOptions}
+            hideEmptyOption
           />
         </div>
 

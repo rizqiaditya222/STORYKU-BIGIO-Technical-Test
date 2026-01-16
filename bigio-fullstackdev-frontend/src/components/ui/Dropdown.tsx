@@ -14,6 +14,7 @@ interface DropdownProps {
   options: DropdownOption[]
   className?: string
   disabled?: boolean
+  hideEmptyOption?: boolean
 }
 
 const Dropdown = ({ 
@@ -23,7 +24,8 @@ const Dropdown = ({
   onChange,
   options,
   className = '',
-  disabled = false
+  disabled = false,
+  hideEmptyOption = false
 }: DropdownProps) => {
   return (
     <div className={`flex flex-col ${className}`}>
@@ -35,7 +37,7 @@ const Dropdown = ({
           disabled={disabled}
           className={`h-12 w-full appearance-none rounded-md border border-gray-300 bg-white px-4 pr-10 text-gray-700 outline-none ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
         >
-          <option value="">{placeholder}</option>
+          {!hideEmptyOption && <option value="">{placeholder}</option>}
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
