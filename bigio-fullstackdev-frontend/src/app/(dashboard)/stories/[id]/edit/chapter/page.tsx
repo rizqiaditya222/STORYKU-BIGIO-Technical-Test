@@ -1,23 +1,88 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import MainButton from '@/components/ui/MainButton'
 import SecondaryButton from '@/components/ui/SecondaryButton'
 import FormField from '@/components/ui/FormField'
 import QuillEditor from '@/components/ui/QuillEditor'
+import { useStory } from '@/hooks/useStory'
+import { chapterService } from '@/services/ChapterService'
 
 const EditChapter = () => {
     const params = useParams()
-    const id = params.id
+    const router = useRouter()
+    const searchParams = useSearchParams()
+    const id = params.id as string
+    const chapterId = searchParams.get('chapterId')
+    
+    const { story, loading } = useStory(id)
+    const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
+    const [saving, setSaving] = useState(false)
+    
+    const isEditMode = !!chapterId
+    const pageTitle = isEditMode ? 'Edit Chapter' : 'Add Chapter'
+
+    useEffect(() => {
+        if (isEditMode && story?.chapters) {
+            const chapter = story.chapters.find(ch => ch.id === chapterId)
+            if (chapter) {
+                setTitle(chapter.title)
+                setContent(chapter.content)
+            }
+        }
+    }, [isEditMode, chapterId, story])
+
+    const handleSave = async () => {
+        if (!title.trim()) {
+            alert('Chapter title is required')
+            return
+        }
+
+        try {
+            setSaving(true)
+            
+            if (isEditMode && chapterId) {
+                await chapterService.updateChapter(chapterId, {
+                    storyId: id,
+                    title: title.trim(),
+                    content: content
+                })
+            } else {
+                const chapterOrder = (story?.chapters?.length || 0) + 1
+                await chapterService.createChapter({
+                    storyId: id,
+                    title: title.trim(),
+                    content: content
+                })
+            }
+            
+            router.push(`/stories/${id}/edit`)
+        } catch (error) {
+            console.error('Error saving chapter:', error)
+            alert('Failed to save chapter. Please try again.')
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    if (loading) {
+        return (
+            <div className="flex h-full w-full items-center justify-center">
+                <p className="text-gray-500">Loading...</p>
+            </div>
+        )
+    }
 
     return (
         <div className="flex h-full w-full flex-col gap-4">
             <div className="flex items-center gap-3">
-                <p className="text-sm text-gray-400">Stories Management</p>
+                <Link href="/stories">
+                    <p className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer">Stories Management</p>
+                </Link>
                 <Image
                     src="/icons/next-icon.svg"
                     alt="Next"
@@ -25,7 +90,9 @@ const EditChapter = () => {
                     height={20}
                     className="opacity-40"
                 />
-                <p className="text-sm text-gray-400">Edit Story</p>
+                <Link href={`/stories/${id}/edit`}>
+                    <p className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer">Edit Story</p>
+                </Link>
                 <Image
                     src="/icons/next-icon.svg"
                     alt="Next"
@@ -33,11 +100,11 @@ const EditChapter = () => {
                     height={20}
                     className="opacity-40"
                 />
-                <p className="text-sm text-[#41A3B7]">Add Chapter</p>
+                <p className="text-sm text-[#41A3B7]">{pageTitle}</p>
             </div>
 
             <h1 className="text-3xl font-bold text-gray-700">
-                Add Chapter
+                {pageTitle}
             </h1>
 
             <Link href={`/stories/${id}/edit`}>
@@ -59,6 +126,8 @@ const EditChapter = () => {
                     <FormField
                         label="Title"
                         placeholder="Title"
+                        value={title}
+                        onChange={setTitle}
                         className="flex-1"
                     />
                 </div>
@@ -78,8 +147,9 @@ const EditChapter = () => {
                         <SecondaryButton label="Cancel" />
                     </Link>
                     <MainButton 
-                        label="Save"
+                        label={saving ? "Saving..." : "Save"}
                         variant="orange"
+                        onClick={handleSave}
                     />
                 </div>
             </div>

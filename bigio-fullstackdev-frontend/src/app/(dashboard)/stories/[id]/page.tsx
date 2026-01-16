@@ -56,7 +56,9 @@ const StoryDetail = () => {
     return (
         <div className="flex h-full w-full flex-col gap-4">
             <div className="flex items-center gap-3">
-                <p className="text-sm text-gray-400">Stories Management</p>
+                <Link href="/stories">
+                    <p className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer">Stories Management</p>
+                </Link>
                 <Image
                     src="/icons/next-icon.svg"
                     alt="Next"

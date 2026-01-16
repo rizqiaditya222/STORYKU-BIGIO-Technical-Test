@@ -11,6 +11,7 @@ import ImagePicker from '@/components/ui/ImagePicker'
 import SecondaryButton from '@/components/ui/SecondaryButton'
 import ConfirmationModal from '@/components/ui/ConfirmationModal'
 import ChapterTable, { Chapter as ChapterRow } from '@/components/story/ChapterTable'
+import TagsInput from '@/components/story/TagsInput'
 import { storyService } from '@/services/StoryService'
 
 const AddStory = () => {
@@ -27,7 +28,7 @@ const AddStory = () => {
         author: '',
         synopsis: '',
         category: '',
-        tags: '',
+        tags: [] as string[],
         status: 'Draft',
         coverImage: null as File | null
     })
@@ -43,7 +44,6 @@ const AddStory = () => {
     }
 
     const handleEditChapter = (chapter: ChapterRow) => {
-        // Save current form data
         localStorage.setItem('tempStoryForm', JSON.stringify({
             title: formData.title,
             author: formData.author,
@@ -53,13 +53,11 @@ const AddStory = () => {
             status: formData.status
         }))
         
-        // Save cover image
         if (formData.coverImage) {
             const reader = new FileReader()
             reader.onloadend = () => {
                 localStorage.setItem('tempCoverImage', reader.result as string)
                 localStorage.setItem('tempCoverImageName', formData.coverImage!.name)
-                // Navigate with chapter id to edit
                 localStorage.setItem('editingChapterId', chapter.id.toString())
                 router.push('/stories/add/chapter')
             }
@@ -92,10 +90,8 @@ const AddStory = () => {
             }))
         }
 
-        // Restore cover image from localStorage
         const savedCoverImage = localStorage.getItem('tempCoverImage')
         if (savedCoverImage) {
-            // Convert base64 back to File
             fetch(savedCoverImage)
                 .then(res => res.blob())
                 .then(blob => {
@@ -122,10 +118,6 @@ const AddStory = () => {
     const handleSubmit = async () => {
         try {
             setLoading(true)
-            
-            const tagsArray = formData.tags
-                ? formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
-                : []
 
             const chaptersData = chapters.map((chapter, index) => ({
                 title: chapter.title,
@@ -139,7 +131,7 @@ const AddStory = () => {
                 synopsis: formData.synopsis,
                 category: formData.category,
                 status: formData.status,
-                tags: tagsArray,
+                tags: formData.tags,
                 chapters: chaptersData,
                 coverImage: formData.coverImage || undefined
             }
@@ -162,7 +154,9 @@ const AddStory = () => {
     return (
         <div className="flex h-full w-full flex-col gap-4">
             <div className="flex items-center gap-3">
-                <p className="text-sm text-gray-400">Stories Management</p>
+                <Link href="/stories">
+                    <p className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer">Stories Management</p>
+                </Link>
                 <Image
                     src="/icons/next-icon.svg"
                     alt="Next"
@@ -218,9 +212,9 @@ const AddStory = () => {
                         options={categoryOptions}
                         className="flex-1"
                     />
-                    <FormField 
+                    <TagsInput 
                         label="Tags / Keywords"
-                        placeholder="e.g. romance, school, drama"
+                        placeholder="Type to add tags..."
                         value={formData.tags}
                         onChange={(value) => setFormData(prev => ({ ...prev, tags: value }))}
                         className="flex-1"
@@ -260,7 +254,6 @@ const AddStory = () => {
                                 status: formData.status
                             }))
                             
-                            // Save cover image to localStorage as base64
                             if (formData.coverImage) {
                                 const reader = new FileReader()
                                 reader.onloadend = () => {

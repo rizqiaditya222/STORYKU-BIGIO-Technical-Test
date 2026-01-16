@@ -10,6 +10,7 @@ import FormField from '@/components/ui/FormField'
 import Dropdown from '@/components/ui/Dropdown'
 import ImagePicker from '@/components/ui/ImagePicker'
 import ChapterTable from '@/components/story/ChapterTable'
+import TagsInput from '@/components/story/TagsInput'
 import ConfirmationModal from '@/components/ui/ConfirmationModal'
 import { storyService } from '@/services/StoryService'
 import { chapterService } from '@/services/ChapterService'
@@ -29,7 +30,7 @@ const EditStory = () => {
         author: '',
         synopsis: '',
         category: '',
-        tags: '',
+        tags: [] as string[],
         status: 'Draft',
         coverImage: null as File | null
     })
@@ -41,7 +42,7 @@ const EditStory = () => {
                 author: story.author,
                 synopsis: story.synopsis || '',
                 category: story.category,
-                tags: story.tags?.join(', ') || '',
+                tags: Array.isArray(story.tags) ? story.tags : [],
                 status: story.status,
                 coverImage: null
             })
@@ -51,10 +52,6 @@ const EditStory = () => {
     const handleSave = async () => {
         try {
             setSaving(true)
-            
-            const tagsArray = formData.tags
-                ? formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
-                : []
 
             const submitData = {
                 title: formData.title,
@@ -62,7 +59,7 @@ const EditStory = () => {
                 synopsis: formData.synopsis,
                 category: formData.category,
                 status: formData.status,
-                tags: tagsArray,
+                tags: formData.tags,
                 coverImage: formData.coverImage || undefined
             }
 
@@ -82,7 +79,6 @@ const EditStory = () => {
         try {
             await chapterService.deleteChapter(selectedChapterId)
             
-            // Refresh story data
             await refetch()
             
             setIsDeleteChapterModalOpen(false)
@@ -137,7 +133,9 @@ const EditStory = () => {
     return (
         <div className="flex h-full w-full flex-col gap-4">
             <div className="flex items-center gap-3">
-                <p className="text-sm text-gray-400">Stories Management</p>
+                <Link href="/stories">
+                    <p className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer">Stories Management</p>
+                </Link>
                 <Image
                     src="/icons/next-icon.svg"
                     alt="Next"
@@ -202,9 +200,9 @@ const EditStory = () => {
                         options={categoryOptions}
                         className="flex-1"
                     />
-                    <FormField 
+                    <TagsInput 
                         label="Tags / Keywords"
-                        placeholder="e.g. romance, school, drama"
+                        placeholder="Type to add tags..."
                         value={formData.tags}
                         onChange={(value) => setFormData(prev => ({ ...prev, tags: value }))}
                         className="flex-1"

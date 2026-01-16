@@ -35,7 +35,6 @@ export const useStories = (params: UseStoriesParams = {}) => {
 
     useEffect(() => {
         fetchStories()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params.search, params.category, params.status, params.page, params.limit])
 
     return {

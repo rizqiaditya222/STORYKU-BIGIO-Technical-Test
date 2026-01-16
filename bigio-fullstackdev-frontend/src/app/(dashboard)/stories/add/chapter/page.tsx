@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -13,6 +13,28 @@ const AddChapter = () => {
     const router = useRouter()
     const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
+    const [editingId, setEditingId] = useState<string | null>(null)
+    const [isEditMode, setIsEditMode] = useState(false)
+
+    useEffect(() => {
+        const editingChapterId = localStorage.getItem('editingChapterId')
+        if (editingChapterId) {
+            setEditingId(editingChapterId)
+            setIsEditMode(true)
+            
+            const existingChapters = localStorage.getItem('tempChapters')
+            if (existingChapters) {
+                const chapters = JSON.parse(existingChapters)
+                const chapterToEdit = chapters.find((ch: any) => ch.id.toString() === editingChapterId)
+                if (chapterToEdit) {
+                    setTitle(chapterToEdit.title)
+                    setContent(chapterToEdit.content || '')
+                }
+            }
+            
+            localStorage.removeItem('editingChapterId')
+        }
+    }, [])
 
     const handleSave = () => {
         if (!title.trim()) {
@@ -23,15 +45,29 @@ const AddChapter = () => {
         const existingChapters = localStorage.getItem('tempChapters')
         const chapters = existingChapters ? JSON.parse(existingChapters) : []
         
-        const newChapter = {
-            id: Date.now(),
-            title: title.trim(),
-            content: content,
-            lastUpdated: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })
+        if (isEditMode && editingId) {
+            const updatedChapters = chapters.map((ch: any) => {
+                if (ch.id.toString() === editingId) {
+                    return {
+                        ...ch,
+                        title: title.trim(),
+                        content: content,
+                        lastUpdated: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })
+                    }
+                }
+                return ch
+            })
+            localStorage.setItem('tempChapters', JSON.stringify(updatedChapters))
+        } else {
+            const newChapter = {
+                id: Date.now(),
+                title: title.trim(),
+                content: content,
+                lastUpdated: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })
+            }
+            chapters.push(newChapter)
+            localStorage.setItem('tempChapters', JSON.stringify(chapters))
         }
-        
-        chapters.push(newChapter)
-        localStorage.setItem('tempChapters', JSON.stringify(chapters))
         
         router.push('/stories/add')
     }
@@ -43,7 +79,9 @@ const AddChapter = () => {
     return (
         <div className="flex h-full w-full flex-col gap-4">
             <div className="flex items-center gap-3">
-                <p className="text-sm text-gray-400">Stories Management</p>
+                <Link href="/stories">
+                    <p className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer">Stories Management</p>
+                </Link>
                 <Image
                     src="/icons/next-icon.svg"
                     alt="Next"
@@ -51,7 +89,9 @@ const AddChapter = () => {
                     height={20}
                     className="opacity-40"
                 />
-                <p className="text-sm text-gray-400">Add Stories</p>
+                <Link href="/stories/add">
+                    <p className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer">Add Stories</p>
+                </Link>
                 <Image
                     src="/icons/next-icon.svg"
                     alt="Next"
@@ -59,11 +99,11 @@ const AddChapter = () => {
                     height={20}
                     className="opacity-40"
                 />
-                <p className="text-sm text-[#41A3B7]">Add Chapter</p>
+                <p className="text-sm text-[#41A3B7]">{isEditMode ? 'Edit Chapter' : 'Add Chapter'}</p>
             </div>
 
             <h1 className="text-3xl font-bold text-gray-700">
-                Add Chapter
+                {isEditMode ? 'Edit Chapter' : 'Add Chapter'}
             </h1>
 
             <Link href="/stories/add">
