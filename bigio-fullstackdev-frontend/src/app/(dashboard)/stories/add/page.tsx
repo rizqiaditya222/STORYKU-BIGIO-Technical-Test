@@ -10,17 +10,17 @@ import Dropdown from '@/components/ui/Dropdown'
 import ImagePicker from '@/components/ui/ImagePicker'
 import SecondaryButton from '@/components/ui/SecondaryButton'
 import ConfirmationModal from '@/components/ui/ConfirmationModal'
-import ChapterTable from '@/components/story/ChapterTable'
+import ChapterTable, { Chapter as ChapterRow } from '@/components/story/ChapterTable'
 import { storyService } from '@/services/StoryService'
 
 const AddStory = () => {
     const router = useRouter()
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
     const [isDeleteChapterModalOpen, setIsDeleteChapterModalOpen] = useState(false)
-    const [selectedChapter, setSelectedChapter] = useState<{id: number, title: string, content: string, lastUpdated: string} | null>(null)
+    const [selectedChapter, setSelectedChapter] = useState<ChapterRow | null>(null)
     const [loading, setLoading] = useState(false)
     const [mounted, setMounted] = useState(false)
-    const [chapters, setChapters] = useState<Array<{id: number, title: string, content: string, lastUpdated: string}>>([])
+    const [chapters, setChapters] = useState<ChapterRow[]>([])
     
     const [formData, setFormData] = useState({
         title: '',
@@ -42,7 +42,7 @@ const AddStory = () => {
         setSelectedChapter(null)
     }
 
-    const handleEditChapter = (chapter: {id: number, title: string, content: string, lastUpdated: string}) => {
+    const handleEditChapter = (chapter: ChapterRow) => {
         // Save current form data
         localStorage.setItem('tempStoryForm', JSON.stringify({
             title: formData.title,

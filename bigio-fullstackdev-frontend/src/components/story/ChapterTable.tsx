@@ -1,7 +1,7 @@
 import React from 'react'
 import { useDropdown } from '@/hooks/useDropdown'
 
-interface Chapter {
+export interface Chapter {
     id: number | string
     title: string
     content?: string
