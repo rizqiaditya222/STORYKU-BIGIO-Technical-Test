@@ -27,6 +27,11 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false
       },
+      chapterOrder: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 1
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,
