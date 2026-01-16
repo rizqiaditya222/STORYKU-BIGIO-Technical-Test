@@ -1,5 +1,6 @@
 import React from 'react'
 import { useDropdown } from '@/hooks/useDropdown'
+import DropdownMenu from '@/components/ui/DropdownMenu'
 
 export interface Chapter {
     id: number | string
@@ -21,16 +22,16 @@ const ChapterTable = ({ data, onEdit, onDelete }: ChapterTableProps) => {
 
     return (
         <div className="w-full overflow-x-auto bg-white">
-            <table className="w-full">
-                <thead className="border-b border-gray-200">
+            <table className="w-full min-w-[600px]">
+                <thead className="border-b border-gray-200 bg-gray-50">
                     <tr>
-                        <th className="font-bold py-4 text-left text-md text-gray-700">
+                        <th className="font-bold py-3 px-3 md:px-4 text-left text-xs md:text-sm text-gray-700">
                             Title
                         </th>
-                        <th className="font-bold py-4 text-left text-md text-gray-700">
+                        <th className="font-bold py-3 px-3 md:px-4 text-left text-xs md:text-sm text-gray-700">
                             Last Updated
                         </th>
-                        {showActions && <th className="px-4 py-4"></th>}
+                        {showActions && <th className="px-3 md:px-4 py-3 w-12"></th>}
                     </tr>
                 </thead>
 
@@ -38,54 +39,43 @@ const ChapterTable = ({ data, onEdit, onDelete }: ChapterTableProps) => {
                     {data.map((chapter) => (
                         <tr
                             key={chapter.id}
-                            className="border-b border-gray-100 hover:bg-gray-50"
+                            className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
                         >
-                            <td className="py-4">
-                                <p className="text-sm font-medium text-gray-700">
+                            <td className="py-3 px-3 md:px-4">
+                                <p className="text-xs md:text-sm font-medium text-gray-700">
                                     {chapter.title}
                                 </p>
                             </td>
 
-                            <td className="py-4 text-sm text-gray-500">
+                            <td className="py-3 px-3 md:px-4 text-xs md:text-sm text-gray-500">
                                 {chapter.lastUpdated}
                             </td>
 
                             {showActions && (
-                                <td className="px-4 py-4 text-right">
+                                <td className="px-3 md:px-4 py-3">
                                     <div className='relative' ref={openDropdown === chapter.id ? dropdownRef : null}>
                                         <button 
                                             onClick={() => toggleDropdown(chapter.id)}
-                                            className="text-gray-400 hover:text-gray-600"
+                                            className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
                                         >
-                                            <span className="text-xl cursor-pointer">⋮</span>
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                                <circle cx="8" cy="3" r="1.5"/>
+                                                <circle cx="8" cy="8" r="1.5"/>
+                                                <circle cx="8" cy="13" r="1.5"/>
+                                            </svg>
                                         </button>
 
-                                        {openDropdown === chapter.id && (
-                                            <div className='absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10'>
-                                                {onEdit && (
-                                                    <button
-                                                        onClick={() => {
-                                                            onEdit(chapter)
-                                                            closeDropdown()
-                                                        }}
-                                                        className='w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2'
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                )}
-                                                {onDelete && (
-                                                    <button
-                                                        onClick={() => {
-                                                            onDelete(chapter)
-                                                            closeDropdown()
-                                                        }}
-                                                        className='w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2'
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                )}
-                                            </div>
-                                        )}
+                                        <DropdownMenu
+                                            isOpen={openDropdown === chapter.id}
+                                            onEdit={onEdit ? () => {
+                                                onEdit(chapter)
+                                                closeDropdown()
+                                            } : undefined}
+                                            onDelete={onDelete ? () => {
+                                                onDelete(chapter)
+                                                closeDropdown()
+                                            } : undefined}
+                                        />
                                     </div>
                                 </td>
                             )}

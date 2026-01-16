@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { useDropdown } from '@/hooks/useDropdown'
+import DropdownMenu from '@/components/ui/DropdownMenu'
 
 interface Story {
   id: string
@@ -22,46 +23,47 @@ interface StoryTableProps {
 
 const StoryTable = ({ data, onEdit, onDelete, onRowClick }: StoryTableProps) => {
   const { openDropdown, dropdownRef, toggleDropdown, closeDropdown } = useDropdown()
+  
   return (
     <div className='w-full overflow-x-auto'>
-      <table className='w-full'>
-        <thead className='border-b border-gray-200'>
+      <table className='w-full min-w-[800px]'>
+        <thead className='border-b border-gray-200 bg-gray-50'>
           <tr>
-            <th className='text-left py-4 px-4 text-sm font-semibold text-gray-700'>No</th>
-            <th className='text-left py-4 px-4 text-sm font-semibold text-gray-700'>Title</th>
-            <th className='text-left py-4 px-4 text-sm font-semibold text-gray-700'>Writers</th>
-            <th className='text-left py-4 px-4 text-sm font-semibold text-gray-700'>Category</th>
-            <th className='text-left py-4 px-4 text-sm font-semibold text-gray-700'>Keyword</th>
-            <th className='text-left py-4 px-4 text-sm font-semibold text-gray-700'>Status</th>
-            <th className='py-4 px-4'></th>
+            <th className='text-left py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700'>No</th>
+            <th className='text-left py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700'>Title</th>
+            <th className='text-left py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700'>Writers</th>
+            <th className='text-left py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700'>Category</th>
+            <th className='text-left py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700'>Keyword</th>
+            <th className='text-left py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700'>Status</th>
+            <th className='py-3 px-3 md:px-4 w-12'></th>
           </tr>
         </thead>
         <tbody>
           {data.map((story) => (
-            <tr key={story.no} className='border-b border-gray-100 hover:bg-gray-50'>
-              <td className='py-4 px-4 text-sm text-gray-700'>{story.no}</td>
+            <tr key={story.no} className='border-b border-gray-100 hover:bg-gray-50 transition-colors'>
+              <td className='py-3 px-3 md:px-4 text-xs md:text-sm text-gray-700'>{story.no}</td>
               <td 
-                className='py-4 px-4 text-sm text-gray-700 cursor-pointer hover:text-storyku-blue'
+                className='py-3 px-3 md:px-4 text-xs md:text-sm text-gray-700 cursor-pointer hover:text-storyku-blue font-medium'
                 onClick={() => onRowClick?.(story)}
               >
                 {story.title}
               </td>
-              <td className='py-4 px-4 text-sm text-gray-700'>{story.writers}</td>
-              <td className='py-4 px-4 text-sm text-gray-700'>{story.category}</td>
-              <td className='py-4 px-4'>
-                <div className='flex gap-2 flex-wrap'>
+              <td className='py-3 px-3 md:px-4 text-xs md:text-sm text-gray-700'>{story.writers}</td>
+              <td className='py-3 px-3 md:px-4 text-xs md:text-sm text-gray-700'>{story.category}</td>
+              <td className='py-3 px-3 md:px-4'>
+                <div className='flex gap-1.5 flex-wrap'>
                   {story.keywords.map((keyword, index) => (
                     <span 
                       key={index}
-                      className='px-3 py-1 bg-gray-200 text-gray-600 text-xs rounded-full'
+                      className='px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded-full'
                     >
                       {keyword}
                     </span>
                   ))}
                 </div>
               </td>
-              <td className='py-4 px-4'>
-                <span className={`px-4 py-1.5 rounded-full text-xs font-medium ${
+              <td className='py-3 px-3 md:px-4'>
+                <span className={`px-3 py-1 rounded-full text-xs font-medium inline-block ${
                   story.status === 'Draft' 
                     ? 'bg-yellow-100 text-yellow-700' 
                     : 'bg-green-100 text-green-700'
@@ -69,37 +71,30 @@ const StoryTable = ({ data, onEdit, onDelete, onRowClick }: StoryTableProps) => 
                   {story.status}
                 </span>
               </td>
-              <td className='py-4 px-4'>
+              <td className='py-3 px-3 md:px-4'>
                 <div className='relative' ref={openDropdown === story.no ? dropdownRef : null}>
                   <button 
                     onClick={() => toggleDropdown(story.no)}
-                    className='text-gray-400 hover:text-gray-600'
+                    className='p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors'
                   >
-                    <span className='text-xl cursor-pointer'>⋮</span>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                      <circle cx="8" cy="3" r="1.5"/>
+                      <circle cx="8" cy="8" r="1.5"/>
+                      <circle cx="8" cy="13" r="1.5"/>
+                    </svg>
                   </button>
 
-                  {openDropdown === story.no && (
-                    <div className='absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10'>
-                      <button
-                        onClick={() => {
-                          onEdit?.(story)
-                          closeDropdown()
-                        }}
-                        className='w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2'
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => {
-                          onDelete?.(story)
-                          closeDropdown()
-                        }}
-                        className='w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2'
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  )}
+                  <DropdownMenu
+                    isOpen={openDropdown === story.no}
+                    onEdit={() => {
+                      onEdit?.(story)
+                      closeDropdown()
+                    }}
+                    onDelete={() => {
+                      onDelete?.(story)
+                      closeDropdown()
+                    }}
+                  />
                 </div>
               </td>
             </tr>

@@ -76,12 +76,12 @@ const Stories = () => {
     }))
 
     return (
-        <div className='h-full w-full flex flex-col gap-2'>
-            <h1 className='text-gray-700 text-3xl font-bold'>Stories</h1>
+        <div className='h-full w-full flex flex-col gap-2 md:gap-4'>
+            <h1 className='text-gray-700 text-2xl md:text-3xl font-bold'>Stories</h1>
 
-            <div className='flex flex-col gap-6 p-6 bg-white rounded-xl w-full shadow-sm'>
-                <div className='w-full flex items-center justify-between'>
-                    <div className='bg-gray-200 rounded-lg px-4 py-2 w-64 flex items-center gap-2'>
+            <div className='flex flex-col gap-4 md:gap-6 p-4 md:p-6 bg-white rounded-xl w-full shadow-sm'>
+                <div className='w-full flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 md:gap-0'>
+                    <div className='bg-gray-200 rounded-lg px-3 md:px-4 py-2 w-full md:w-64 flex items-center gap-2'>
                         <Image src="/icons/search-icon.svg" alt="Search" width={16} height={16} className="opacity-60" />
                         <input
                             type="text"
@@ -92,12 +92,12 @@ const Stories = () => {
                         />
                     </div>
 
-                    <div className='flex items-center gap-4'>
+                    <div className='flex items-center gap-3 md:gap-4'>
                         <button
                             onClick={() => setIsFilterOpen(true)}
-                            className='w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-100 transition-colors cursor-pointer'
+                            className='w-10 h-10 md:w-12 md:h-12 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-100 transition-colors cursor-pointer'
                         >
-                            <Image src="/icons/filter-icon.svg" alt="Filter" width={20} height={20} />
+                            <Image src="/icons/filter-icon.svg" alt="Filter" width={18} height={18} className="md:w-5 md:h-5" />
                         </button>
 
                         <div className='w-[1px] h-12 bg-gray-300' />
