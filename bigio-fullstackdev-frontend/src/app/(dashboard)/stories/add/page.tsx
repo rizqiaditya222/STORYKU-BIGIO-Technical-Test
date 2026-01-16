@@ -151,7 +151,7 @@ const AddStory = () => {
     }
 
     return (
-        <div className="flex h-full w-full flex-col gap-4">
+        <div className="flex h-full w-full flex-col gap-4 pb-12">
             <PageHeader
                 breadcrumbs={[
                     { label: 'Stories Management', href: '/stories' },

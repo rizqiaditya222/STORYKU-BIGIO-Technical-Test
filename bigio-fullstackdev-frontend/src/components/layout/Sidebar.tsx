@@ -88,7 +88,7 @@ const Sidebar = () => {
 
       {isMobileMenuOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          className="lg:hidden fixed inset-0 backdrop-blur-sm bg-black/20 z-30"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
