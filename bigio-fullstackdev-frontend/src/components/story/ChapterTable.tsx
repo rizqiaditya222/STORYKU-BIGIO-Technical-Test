@@ -2,7 +2,7 @@ import React from 'react'
 import { useDropdown } from '@/hooks/useDropdown'
 
 interface Chapter {
-    id: number
+    id: number | string
     title: string
     content?: string
     lastUpdated: string
