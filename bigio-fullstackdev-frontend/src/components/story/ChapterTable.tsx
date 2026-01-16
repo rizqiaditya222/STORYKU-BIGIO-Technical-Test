@@ -4,6 +4,7 @@ import { useDropdown } from '@/hooks/useDropdown'
 interface Chapter {
     id: number | string
     title: string
+    content?: string
     lastUpdated: string
 }
 
