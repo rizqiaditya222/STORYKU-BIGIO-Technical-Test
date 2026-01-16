@@ -1,14 +1,15 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import Image from 'next/image'
+import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import SecondaryButton from '@/components/ui/SecondaryButton'
 import MainButton from '@/components/ui/MainButton'
 import FormField from '@/components/ui/FormField'
 import Dropdown from '@/components/ui/Dropdown'
 import ChapterTable from '@/components/story/ChapterTable'
+import PageHeader from '@/components/layout/PageHeader'
 import { useStory } from '@/hooks/useStory'
 
 const StoryDetail = () => {
@@ -55,37 +56,14 @@ const StoryDetail = () => {
 
     return (
         <div className="flex h-full w-full flex-col gap-4">
-            <div className="flex items-center gap-3">
-                <Link href="/stories">
-                    <p className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer">Stories Management</p>
-                </Link>
-                <Image
-                    src="/icons/next-icon.svg"
-                    alt="Next"
-                    width={20}
-                    height={20}
-                    className="opacity-40"
-                />
-                <p className="text-sm text-[#41A3B7]">Story Detail</p>
-            </div>
-
-            <h1 className="text-3xl font-bold text-gray-700">
-                Story Detail
-            </h1>
-
-            <Link href="/stories">
-                <div className="flex w-24 cursor-pointer items-center justify-center gap-2 rounded-full bg-gray-200 py-2 hover:bg-gray-300">
-                    <Image
-                        src="/icons/arrow-icon.svg"
-                        alt="Back"
-                        width={20}
-                        height={20}
-                    />
-                    <p className="pr-2 text-sm font-semibold text-gray-700">
-                        Back
-                    </p>
-                </div>
-            </Link>
+            <PageHeader
+                breadcrumbs={[
+                    { label: 'Stories Management', href: '/stories' },
+                    { label: 'Story Detail' }
+                ]}
+                title="Story Detail"
+                backLink="/stories"
+            />
 
             <div className="mt-6 flex w-full flex-col gap-6 rounded-xl bg-white p-6 shadow-sm">
                 <div className="flex w-full gap-4">

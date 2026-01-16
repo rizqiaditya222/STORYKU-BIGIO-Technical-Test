@@ -2,12 +2,11 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import Image from 'next/image'
 import MainButton from '@/components/ui/MainButton'
 import SecondaryButton from '@/components/ui/SecondaryButton'
 import FormField from '@/components/ui/FormField'
 import QuillEditor from '@/components/ui/QuillEditor'
+import PageHeader from '@/components/layout/PageHeader'
 
 const AddChapter = () => {
     const router = useRouter()
@@ -78,47 +77,15 @@ const AddChapter = () => {
 
     return (
         <div className="flex h-full w-full flex-col gap-4">
-            <div className="flex items-center gap-3">
-                <Link href="/stories">
-                    <p className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer">Stories Management</p>
-                </Link>
-                <Image
-                    src="/icons/next-icon.svg"
-                    alt="Next"
-                    width={20}
-                    height={20}
-                    className="opacity-40"
-                />
-                <Link href="/stories/add">
-                    <p className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer">Add Stories</p>
-                </Link>
-                <Image
-                    src="/icons/next-icon.svg"
-                    alt="Next"
-                    width={20}
-                    height={20}
-                    className="opacity-40"
-                />
-                <p className="text-sm text-[#41A3B7]">{isEditMode ? 'Edit Chapter' : 'Add Chapter'}</p>
-            </div>
-
-            <h1 className="text-3xl font-bold text-gray-700">
-                {isEditMode ? 'Edit Chapter' : 'Add Chapter'}
-            </h1>
-
-            <Link href="/stories/add">
-                <div className="flex w-24 cursor-pointer items-center justify-center gap-2 rounded-full bg-gray-200 py-2 hover:bg-gray-300">
-                    <Image
-                        src="/icons/arrow-icon.svg"
-                        alt="Back"
-                        width={20}
-                        height={20}
-                    />
-                    <p className="pr-2 text-sm font-semibold text-gray-700">
-                        Back
-                    </p>
-                </div>
-            </Link>
+            <PageHeader
+                breadcrumbs={[
+                    { label: 'Stories Management', href: '/stories' },
+                    { label: 'Add Stories', href: '/stories/add' },
+                    { label: isEditMode ? 'Edit Chapter' : 'Add Chapter' }
+                ]}
+                title={isEditMode ? 'Edit Chapter' : 'Add Chapter'}
+                backLink="/stories/add"
+            />
 
             <div className="mt-6 flex w-full flex-col gap-6 rounded-xl bg-white p-6 shadow-sm">
                 <div className="w-full">
@@ -141,8 +108,7 @@ const AddChapter = () => {
                     />
                 </div>
 
-            </div>
-                <div className='flex w-full justify-end gap-4 pt-4'>
+                <div className='flex w-full justify-end gap-4 pt-4 border-t border-gray-200'>
                     <SecondaryButton 
                         label="Cancel" 
                         onClick={handleCancel}
@@ -153,6 +119,7 @@ const AddChapter = () => {
                         onClick={handleSave}
                     />
                 </div>
+            </div>
         </div>
     )
 }

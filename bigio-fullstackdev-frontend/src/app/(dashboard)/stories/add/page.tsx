@@ -1,8 +1,6 @@
 'use client'
 
 import React, { useState } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import MainButton from '@/components/ui/MainButton'
 import FormField from '@/components/ui/FormField'
@@ -12,6 +10,7 @@ import SecondaryButton from '@/components/ui/SecondaryButton'
 import ConfirmationModal from '@/components/ui/ConfirmationModal'
 import ChapterTable, { Chapter as ChapterRow } from '@/components/story/ChapterTable'
 import TagsInput from '@/components/story/TagsInput'
+import PageHeader from '@/components/layout/PageHeader'
 import { storyService } from '@/services/StoryService'
 
 const AddStory = () => {
@@ -153,28 +152,14 @@ const AddStory = () => {
 
     return (
         <div className="flex h-full w-full flex-col gap-4">
-            <div className="flex items-center gap-3">
-                <Link href="/stories">
-                    <p className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer">Stories Management</p>
-                </Link>
-                <Image
-                    src="/icons/next-icon.svg"
-                    alt="Next"
-                    width={20}
-                    height={20}
-                    className="opacity-40"
-                />
-                <p className="text-sm text-[#41A3B7]">Add Stories</p>
-            </div>
-
-            <h1 className="text-3xl font-bold text-gray-700">Add Stories</h1>
-
-            <Link href="/stories">
-                <div className="flex w-24 cursor-pointer items-center justify-center gap-2 rounded-full bg-gray-200 py-2 hover:bg-gray-300">
-                    <Image src="/icons/arrow-icon.svg" alt="Back" width={20} height={20} />
-                    <p className="pr-2 text-sm font-semibold text-gray-700">Back</p>
-                </div>
-            </Link>
+            <PageHeader
+                breadcrumbs={[
+                    { label: 'Stories Management', href: '/stories' },
+                    { label: 'Add Stories' }
+                ]}
+                title="Add Stories"
+                backLink="/stories"
+            />
 
             <div className="mt-6 flex w-full flex-col gap-6 rounded-xl bg-white p-6 shadow-sm">
                 <div className="flex w-full gap-4">

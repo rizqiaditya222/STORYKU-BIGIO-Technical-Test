@@ -151,7 +151,11 @@ exports.updateStory = async (req, res, next) => {
   
   try {
     const { id } = req.params;
-    const { title, author, synopsis, category, tags, status } = req.body;
+    let { title, author, synopsis, category, tags, status } = req.body;
+    
+    if (typeof tags === 'string') {
+      tags = JSON.parse(tags);
+    }
     
     const story = await db.Story.findByPk(id);
     
