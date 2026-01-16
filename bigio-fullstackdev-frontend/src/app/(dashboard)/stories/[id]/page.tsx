@@ -53,16 +53,6 @@ const StoryDetail = () => {
         })
     })) || []
 
-    const chaptersData = story.chapters?.map((chapter) => ({
-        id: chapter.id,
-        title: chapter.title,
-        lastUpdated: new Date(chapter.updatedAt).toLocaleDateString('id-ID', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        })
-    })) || []
-
     return (
         <div className="flex h-full w-full flex-col gap-4">
             <div className="flex items-center gap-3">
