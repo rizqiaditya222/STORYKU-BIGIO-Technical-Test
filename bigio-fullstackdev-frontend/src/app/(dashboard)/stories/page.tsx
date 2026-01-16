@@ -10,6 +10,7 @@ import FilterModal from '@/components/ui/FilterModal'
 import ConfirmationModal from '@/components/ui/ConfirmationModal'
 import { storyService } from '@/services/StoryService'
 import { Story } from '@/types/Story'
+import { useStories } from '@/hooks/useStories'
 
 const Stories = () => {
     const router = useRouter()
@@ -17,8 +18,6 @@ const Stories = () => {
     const [isFilterOpen, setIsFilterOpen] = useState(false)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const [selectedStory, setSelectedStory] = useState<Story | null>(null)
-    const [stories, setStories] = useState<Story[]>([])
-    const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState('')
     const [filters, setFilters] = useState({
         category: '',
@@ -26,42 +25,18 @@ const Stories = () => {
         page: 1,
         limit: 10
     })
-    const [pagination, setPagination] = useState({
-        total: 0,
-        page: 1,
-        limit: 10,
-        totalPages: 0
+
+    const { stories, loading, pagination, refetch } = useStories({
+        search: searchQuery,
+        category: filters.category,
+        status: filters.status,
+        page: filters.page,
+        limit: filters.limit
     })
 
     useEffect(() => {
         setMounted(true)
     }, [])
-
-    const fetchStories = async () => {
-        try {
-            setLoading(true)
-            const params = {
-                search: searchQuery,
-                category: filters.category,
-                status: filters.status,
-                page: filters.page,
-                limit: filters.limit
-            }
-            
-            const response = await storyService.getStories(params)
-            
-            setStories(response.data)
-            setPagination(response.pagination)
-        } catch (error) {
-            console.error('Error fetching stories:', error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        fetchStories()
-    }, [searchQuery, filters])
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value)
@@ -84,7 +59,7 @@ const Stories = () => {
             await storyService.deleteStory(selectedStory.id)
             setIsDeleteModalOpen(false)
             setSelectedStory(null)
-            fetchStories()
+            refetch()
         } catch (error) {
             console.error('Error deleting story:', error)
         }

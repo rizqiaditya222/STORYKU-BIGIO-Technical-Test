@@ -8,6 +8,7 @@ interface FormFieldProps {
   onChange?: (value: string) => void
   rows?: number
   className?: string
+  readOnly?: boolean
 }
 
 const FormField = ({ 
@@ -17,7 +18,8 @@ const FormField = ({
   value, 
   onChange,
   rows = 4,
-  className = ''
+  className = '',
+  readOnly = false
 }: FormFieldProps) => {
   return (
     <div className={`flex flex-col ${className}`}>
@@ -28,7 +30,8 @@ const FormField = ({
           onChange={(e) => onChange?.(e.target.value)}
           placeholder={placeholder}
           rows={rows}
-          className="mt-2 w-full rounded-md border border-gray-300 px-4 py-2 text-gray-700 outline-none placeholder-gray-400 resize-none"
+          readOnly={readOnly}
+          className={`mt-2 w-full rounded-md border border-gray-300 px-4 py-2 text-gray-700 outline-none placeholder-gray-400 resize-none ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
         />
       ) : (
         <input
@@ -36,7 +39,8 @@ const FormField = ({
           value={value}
           onChange={(e) => onChange?.(e.target.value)}
           placeholder={placeholder}
-          className="mt-2 h-12 w-full rounded-md border border-gray-300 px-4 py-2 text-gray-700 outline-none placeholder-gray-400"
+          readOnly={readOnly}
+          className={`mt-2 h-12 w-full rounded-md border border-gray-300 px-4 py-2 text-gray-700 outline-none placeholder-gray-400 ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
         />
       )}
     </div>

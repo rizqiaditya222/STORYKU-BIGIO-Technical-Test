@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React from 'react'
+import { useDropdown } from '@/hooks/useDropdown'
 
 interface Story {
   id: string
@@ -20,23 +21,7 @@ interface StoryTableProps {
 }
 
 const StoryTable = ({ data, onEdit, onDelete, onRowClick }: StoryTableProps) => {
-  const [openDropdown, setOpenDropdown] = useState<number | null>(null)
-  const dropdownRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setOpenDropdown(null)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
-  const toggleDropdown = (no: number) => {
-    setOpenDropdown(openDropdown === no ? null : no)
-  }
+  const { openDropdown, dropdownRef, toggleDropdown, closeDropdown } = useDropdown()
   return (
     <div className='w-full overflow-x-auto'>
       <table className='w-full'>
@@ -98,7 +83,7 @@ const StoryTable = ({ data, onEdit, onDelete, onRowClick }: StoryTableProps) => 
                       <button
                         onClick={() => {
                           onEdit?.(story)
-                          setOpenDropdown(null)
+                          closeDropdown()
                         }}
                         className='w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2'
                       >
@@ -107,7 +92,7 @@ const StoryTable = ({ data, onEdit, onDelete, onRowClick }: StoryTableProps) => 
                       <button
                         onClick={() => {
                           onDelete?.(story)
-                          setOpenDropdown(null)
+                          closeDropdown()
                         }}
                         className='w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2'
                       >

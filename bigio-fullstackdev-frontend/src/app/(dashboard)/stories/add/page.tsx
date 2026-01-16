@@ -16,6 +16,8 @@ import { storyService } from '@/services/StoryService'
 const AddStory = () => {
     const router = useRouter()
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
+    const [isDeleteChapterModalOpen, setIsDeleteChapterModalOpen] = useState(false)
+    const [selectedChapter, setSelectedChapter] = useState<{id: number, title: string, content: string, lastUpdated: string} | null>(null)
     const [loading, setLoading] = useState(false)
     const [mounted, setMounted] = useState(false)
     const [chapters, setChapters] = useState<Array<{id: number, title: string, content: string, lastUpdated: string}>>([])
@@ -29,6 +31,44 @@ const AddStory = () => {
         status: 'Draft',
         coverImage: null as File | null
     })
+
+    const handleDeleteChapter = () => {
+        if (!selectedChapter) return
+        
+        const updatedChapters = chapters.filter(ch => ch.id !== selectedChapter.id)
+        setChapters(updatedChapters)
+        localStorage.setItem('tempChapters', JSON.stringify(updatedChapters))
+        setIsDeleteChapterModalOpen(false)
+        setSelectedChapter(null)
+    }
+
+    const handleEditChapter = (chapter: {id: number, title: string, content: string, lastUpdated: string}) => {
+        // Save current form data
+        localStorage.setItem('tempStoryForm', JSON.stringify({
+            title: formData.title,
+            author: formData.author,
+            synopsis: formData.synopsis,
+            category: formData.category,
+            tags: formData.tags,
+            status: formData.status
+        }))
+        
+        // Save cover image
+        if (formData.coverImage) {
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                localStorage.setItem('tempCoverImage', reader.result as string)
+                localStorage.setItem('tempCoverImageName', formData.coverImage!.name)
+                // Navigate with chapter id to edit
+                localStorage.setItem('editingChapterId', chapter.id.toString())
+                router.push('/stories/add/chapter')
+            }
+            reader.readAsDataURL(formData.coverImage)
+        } else {
+            localStorage.setItem('editingChapterId', chapter.id.toString())
+            router.push('/stories/add/chapter')
+        }
+    }
 
     React.useEffect(() => {
         setMounted(true)
@@ -50,6 +90,19 @@ const AddStory = () => {
                 tags: parsedData.tags || '',
                 status: parsedData.status || 'Draft'
             }))
+        }
+
+        // Restore cover image from localStorage
+        const savedCoverImage = localStorage.getItem('tempCoverImage')
+        if (savedCoverImage) {
+            // Convert base64 back to File
+            fetch(savedCoverImage)
+                .then(res => res.blob())
+                .then(blob => {
+                    const fileName = localStorage.getItem('tempCoverImageName') || 'cover.jpg'
+                    const file = new File([blob], fileName, { type: blob.type })
+                    setFormData(prev => ({ ...prev, coverImage: file }))
+                })
         }
     }, [])
 
@@ -95,6 +148,8 @@ const AddStory = () => {
             
             localStorage.removeItem('tempChapters')
             localStorage.removeItem('tempStoryForm')
+            localStorage.removeItem('tempCoverImage')
+            localStorage.removeItem('tempCoverImageName')
             router.push('/stories')
         } catch (error) {
             console.error('Error creating story:', error)
@@ -175,6 +230,7 @@ const AddStory = () => {
                 <div className="flex w-full gap-4">
                     <ImagePicker 
                         label="Cover Image"
+                        value={formData.coverImage}
                         onImageChange={(file) => setFormData(prev => ({ ...prev, coverImage: file }))}
                         className="flex-1"
                     />
@@ -203,13 +259,33 @@ const AddStory = () => {
                                 tags: formData.tags,
                                 status: formData.status
                             }))
-                            router.push('/stories/add/chapter')
+                            
+                            // Save cover image to localStorage as base64
+                            if (formData.coverImage) {
+                                const reader = new FileReader()
+                                reader.onloadend = () => {
+                                    localStorage.setItem('tempCoverImage', reader.result as string)
+                                    localStorage.setItem('tempCoverImageName', formData.coverImage!.name)
+                                    router.push('/stories/add/chapter')
+                                }
+                                reader.readAsDataURL(formData.coverImage)
+                            } else {
+                                router.push('/stories/add/chapter')
+                            }
                         }}
                     />
                 </div>
 
                 <ChapterTable
                     data={chapters}
+                    onEdit={handleEditChapter}
+                    onDelete={(chapter) => {
+                        const selectedChapterData = chapters.find(ch => ch.id === chapter.id)
+                        if (selectedChapterData) {
+                            setSelectedChapter(selectedChapterData)
+                            setIsDeleteChapterModalOpen(true)
+                        }
+                    }}
                 />
             </div>
             
@@ -233,6 +309,16 @@ const AddStory = () => {
                 message="Are you sure you want to cancel adding the story without saving the data?"
                 confirmText="Yes, Cancel"
                 cancelText="No, Continue"
+            />
+
+            <ConfirmationModal 
+                isOpen={isDeleteChapterModalOpen}
+                onClose={() => setIsDeleteChapterModalOpen(false)}
+                onConfirm={handleDeleteChapter}
+                title="Delete Chapter"
+                message={`Are you sure you want to delete "${selectedChapter?.title}"?`}
+                confirmText="Yes, Delete"
+                cancelText="Cancel"
             />
         </div>
     )

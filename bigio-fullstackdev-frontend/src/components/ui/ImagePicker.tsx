@@ -1,18 +1,26 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 
 interface ImagePickerProps {
   label: string
   onImageChange?: (file: File | null) => void
   className?: string
+  value?: File | null
 }
 
-const ImagePicker = ({ label, onImageChange, className = '' }: ImagePickerProps) => {
-  const [coverImage, setCoverImage] = useState<File | null>(null)
+const ImagePicker = ({ label, onImageChange, className = '', value }: ImagePickerProps) => {
+  const [coverImage, setCoverImage] = useState<File | null>(value || null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [showPreview, setShowPreview] = useState(false)
+
+  useEffect(() => {
+    if (value) {
+      setCoverImage(value)
+      setPreviewUrl(URL.createObjectURL(value))
+    }
+  }, [value])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]

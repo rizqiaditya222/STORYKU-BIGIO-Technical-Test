@@ -1,29 +1,67 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import SecondaryButton from '@/components/ui/SecondaryButton'
 import MainButton from '@/components/ui/MainButton'
+import FormField from '@/components/ui/FormField'
+import Dropdown from '@/components/ui/Dropdown'
+import ChapterTable from '@/components/story/ChapterTable'
+import { useStory } from '@/hooks/useStory'
 
 const StoryDetail = () => {
     const params = useParams()
-    const id = params.id
+    const id = params.id as string
+    const { story, loading, error } = useStory(id)
 
-    const story = {
-        title: "The Moon that Can't be Seen",
-        author: "Rara",
-        synopsis: "A compelling story about...",
-        category: "Teen Fiction",
-        tags: ["school", "fiction"],
-        coverImage: "/images/default-cover.jpg",
-        status: "Draft",
-        chapters: [
-            { id: 1, title: "Chapter 1: The Beginning", lastUpdated: "18 January 2024" },
-            { id: 2, title: "Chapter 2: Discovery", lastUpdated: "20 January 2024" }
-        ]
+    if (loading) {
+        return (
+            <div className="flex h-full w-full items-center justify-center">
+                <p className="text-gray-500">Loading...</p>
+            </div>
+        )
     }
+
+    if (!story) {
+        return (
+            <div className="flex h-full w-full items-center justify-center">
+                <p className="text-gray-500">Story not found</p>
+            </div>
+        )
+    }
+
+    const categoryOptions = [
+        { value: 'Financial', label: 'Financial' },
+        { value: 'Technology', label: 'Technology' },
+        { value: 'Health', label: 'Health' }
+    ]
+
+    const statusOptions = [
+        { value: 'Publish', label: 'Publish' },
+        { value: 'Draft', label: 'Draft' }
+    ]
+
+    const chaptersData = story.chapters?.map((chapter) => ({
+        id: chapter.id,
+        title: chapter.title,
+        lastUpdated: new Date(chapter.updatedAt).toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        })
+    })) || []
+
+    const chaptersData = story.chapters?.map((chapter) => ({
+        id: chapter.id,
+        title: chapter.title,
+        lastUpdated: new Date(chapter.updatedAt).toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        })
+    })) || []
 
     return (
         <div className="flex h-full w-full flex-col gap-4">
@@ -59,76 +97,89 @@ const StoryDetail = () => {
 
             <div className="mt-6 flex w-full flex-col gap-6 rounded-xl bg-white p-6 shadow-sm">
                 <div className="flex w-full gap-4">
-                    <div className="flex-1">
-                        <p className="font-bold text-gray-700 text-md mb-2">Title</p>
-                        <p className="text-gray-600">{story.title}</p>
-                    </div>
-                    <div className="flex-1">
-                        <p className="font-bold text-gray-700 text-md mb-2">Author</p>
-                        <p className="text-gray-600">{story.author}</p>
-                    </div>
+                    <FormField 
+                        label="Title"
+                        placeholder="Title"
+                        value={story.title}
+                        className="flex-1"
+                        readOnly
+                    />
+                    <FormField 
+                        label="Author"
+                        placeholder="Author"
+                        value={story.author}
+                        className="flex-1"
+                        readOnly
+                    />
                 </div>
 
-                <div>
-                    <p className="font-bold text-gray-700 text-md mb-2">Synopsis</p>
-                    <p className="text-gray-600">{story.synopsis}</p>
+                <FormField 
+                    label="Synopsis"
+                    type="textarea"
+                    placeholder="Synopsis"
+                    value={story.synopsis || ''}
+                    rows={8}
+                    readOnly
+                />
+
+                <div className="flex w-full gap-4">
+                    <Dropdown 
+                        label="Category"
+                        placeholder="Category"
+                        value={story.category}
+                        options={categoryOptions}
+                        className="flex-1"
+                        disabled
+                    />
+                    <FormField 
+                        label="Tags / Keywords"
+                        placeholder="e.g. romance, school, drama"
+                        value={story.tags?.join(', ') || ''}
+                        className="flex-1"
+                        readOnly
+                    />
                 </div>
 
                 <div className="flex w-full gap-4">
                     <div className="flex-1">
-                        <p className="font-bold text-gray-700 text-md mb-2">Category</p>
-                        <p className="text-gray-600">{story.category}</p>
+                        <p className="font-bold text-gray-700 text-md mb-2">Cover Image</p>
+                        {story.coverImage ? (
+                            <div className="mt-2 flex h-12 w-full overflow-hidden rounded-md border border-gray-300">
+                                <div className="flex flex-1 items-center px-4 text-sm text-gray-600">
+                                    {story.coverImage.split('/').pop()}
+                                </div>
+                                <div className="flex w-12 items-center justify-center bg-gray-200">
+                                    <Image
+                                        src="/icons/document-icon.svg"
+                                        alt="Document"
+                                        width={20}
+                                        height={20}
+                                        className="opacity-60"
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="mt-2 flex h-12 w-full items-center overflow-hidden rounded-md border border-gray-300 px-4 text-sm text-gray-400">
+                                No cover image
+                            </div>
+                        )}
                     </div>
-                    <div className="flex-1">
-                        <p className="font-bold text-gray-700 text-md mb-2">Tags / Keywords</p>
-                        <div className="flex gap-2">
-                            {story.tags.map((tag, index) => (
-                                <span key={index} className="px-3 py-1 bg-gray-200 text-gray-600 text-xs rounded-full">
-                                    {tag}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex w-full gap-4">
-                    <div className="flex-1">
-                        <p className="font-bold text-gray-700 text-md mb-2">Status</p>
-                        <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-medium ${
-                            story.status === 'Draft' 
-                                ? 'bg-yellow-100 text-yellow-700' 
-                                : 'bg-green-100 text-green-700'
-                        }`}>
-                            {story.status}
-                        </span>
-                    </div>
+                    <Dropdown 
+                        label="Status"
+                        placeholder="Status"
+                        value={story.status}
+                        options={statusOptions}
+                        className="flex-1"
+                        disabled
+                    />
                 </div>
 
                 <div className="mt-4">
                     <div className="flex justify-between items-center mb-4">
-                        <p className="font-bold text-gray-700 text-md">Chapters</p>
+                        <p className="font-bold text-gray-700 text-md">Chapter List</p>
                     </div>
-                    
-                    <div className="border border-gray-200 rounded-lg overflow-hidden">
-                        <table className="w-full">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">No</th>
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Title</th>
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Last Updated</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {story.chapters.map((chapter, index) => (
-                                    <tr key={chapter.id} className="border-t border-gray-200">
-                                        <td className="py-3 px-4 text-sm text-gray-700">{index + 1}</td>
-                                        <td className="py-3 px-4 text-sm text-gray-700">{chapter.title}</td>
-                                        <td className="py-3 px-4 text-sm text-gray-700">{chapter.lastUpdated}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+
+                    <ChapterTable data={chaptersData} />
                 </div>
 
                 <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">

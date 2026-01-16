@@ -13,6 +13,7 @@ interface DropdownProps {
   onChange?: (value: string) => void
   options: DropdownOption[]
   className?: string
+  disabled?: boolean
 }
 
 const Dropdown = ({ 
@@ -21,7 +22,8 @@ const Dropdown = ({
   value, 
   onChange,
   options,
-  className = ''
+  className = '',
+  disabled = false
 }: DropdownProps) => {
   return (
     <div className={`flex flex-col ${className}`}>
@@ -30,7 +32,8 @@ const Dropdown = ({
         <select 
           value={value}
           onChange={(e) => onChange?.(e.target.value)}
-          className="h-12 w-full appearance-none rounded-md border border-gray-300 bg-white px-4 pr-10 text-gray-700 outline-none"
+          disabled={disabled}
+          className={`h-12 w-full appearance-none rounded-md border border-gray-300 bg-white px-4 pr-10 text-gray-700 outline-none ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
         >
           <option value="">{placeholder}</option>
           {options.map((option) => (

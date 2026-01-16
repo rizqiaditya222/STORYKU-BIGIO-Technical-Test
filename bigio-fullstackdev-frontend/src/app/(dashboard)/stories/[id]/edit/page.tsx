@@ -1,30 +1,148 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import MainButton from '@/components/ui/MainButton'
 import SecondaryButton from '@/components/ui/SecondaryButton'
 import FormField from '@/components/ui/FormField'
 import Dropdown from '@/components/ui/Dropdown'
 import ImagePicker from '@/components/ui/ImagePicker'
 import ChapterTable from '@/components/story/ChapterTable'
+import ConfirmationModal from '@/components/ui/ConfirmationModal'
+import { storyService } from '@/services/StoryService'
+import { chapterService } from '@/services/ChapterService'
+import { useStory } from '@/hooks/useStory'
 
 const EditStory = () => {
     const params = useParams()
-    const id = params.id
+    const router = useRouter()
+    const id = params.id as string
+    const { story, loading, refetch } = useStory(id)
+    const [saving, setSaving] = useState(false)
+    const [isDeleteChapterModalOpen, setIsDeleteChapterModalOpen] = useState(false)
+    const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null)
+    
+    const [formData, setFormData] = useState({
+        title: '',
+        author: '',
+        synopsis: '',
+        category: '',
+        tags: '',
+        status: 'Draft',
+        coverImage: null as File | null
+    })
+
+    useEffect(() => {
+        if (story) {
+            setFormData({
+                title: story.title,
+                author: story.author,
+                synopsis: story.synopsis || '',
+                category: story.category,
+                tags: story.tags?.join(', ') || '',
+                status: story.status,
+                coverImage: null
+            })
+        }
+    }, [story])
+
+    const handleSave = async () => {
+        try {
+            setSaving(true)
+            
+            const tagsArray = formData.tags
+                ? formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
+                : []
+
+            const submitData = {
+                title: formData.title,
+                author: formData.author,
+                synopsis: formData.synopsis,
+                category: formData.category,
+                status: formData.status,
+                tags: tagsArray,
+                coverImage: formData.coverImage || undefined
+            }
+
+            await storyService.updateStory(id, submitData)
+            router.push(`/stories/${id}`)
+        } catch (error) {
+            console.error('Error updating story:', error)
+            alert('Failed to update story. Please try again.')
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    const handleDeleteChapter = async () => {
+        if (!selectedChapterId) return
+
+        try {
+            await chapterService.deleteChapter(selectedChapterId)
+            
+            // Refresh story data
+            await refetch()
+            
+            setIsDeleteChapterModalOpen(false)
+            setSelectedChapterId(null)
+        } catch (error) {
+            console.error('Error deleting chapter:', error)
+            alert('Failed to delete chapter. Please try again.')
+        }
+    }
+
+    const handleEditChapter = (chapter: any) => {
+        router.push(`/stories/${id}/edit/chapter?chapterId=${chapter.id}`)
+    }
+
+    if (loading) {
+        return (
+            <div className="flex h-full w-full items-center justify-center">
+                <p className="text-gray-500">Loading...</p>
+            </div>
+        )
+    }
+
+    if (!story) {
+        return (
+            <div className="flex h-full w-full items-center justify-center">
+                <p className="text-gray-500">Story not found</p>
+            </div>
+        )
+    }
 
     const categoryOptions = [
-        { value: 'romance', label: 'Romance' },
-        { value: 'drama', label: 'Drama' },
-        { value: 'fantasy', label: 'Fantasy' }
+        { value: 'Financial', label: 'Financial' },
+        { value: 'Technology', label: 'Technology' },
+        { value: 'Health', label: 'Health' }
     ]
 
     const statusOptions = [
-        { value: 'publish', label: 'Publish' },
-        { value: 'draft', label: 'Draft' }
+        { value: 'Publish', label: 'Publish' },
+        { value: 'Draft', label: 'Draft' }
     ]
+
+    const chaptersData = story.chapters?.map((chapter) => ({
+        id: chapter.id,
+        title: chapter.title,
+        lastUpdated: new Date(chapter.updatedAt).toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        })
+    })) || []
+
+    const chaptersData = story.chapters?.map((chapter) => ({
+        id: chapter.id,
+        title: chapter.title,
+        lastUpdated: new Date(chapter.updatedAt).toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        })
+    })) || []
 
     return (
         <div className="flex h-full w-full flex-col gap-4">
@@ -63,11 +181,15 @@ const EditStory = () => {
                     <FormField 
                         label="Title"
                         placeholder="Title"
+                        value={formData.title}
+                        onChange={(value) => setFormData(prev => ({ ...prev, title: value }))}
                         className="flex-1"
                     />
                     <FormField 
                         label="Author"
                         placeholder="Author"
+                        value={formData.author}
+                        onChange={(value) => setFormData(prev => ({ ...prev, author: value }))}
                         className="flex-1"
                     />
                 </div>
@@ -76,6 +198,8 @@ const EditStory = () => {
                     label="Synopsis"
                     type="textarea"
                     placeholder="Synopsis"
+                    value={formData.synopsis}
+                    onChange={(value) => setFormData(prev => ({ ...prev, synopsis: value }))}
                     rows={8}
                 />
 
@@ -83,12 +207,16 @@ const EditStory = () => {
                     <Dropdown 
                         label="Category"
                         placeholder="Category"
+                        value={formData.category}
+                        onChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
                         options={categoryOptions}
                         className="flex-1"
                     />
                     <FormField 
                         label="Tags / Keywords"
                         placeholder="e.g. romance, school, drama"
+                        value={formData.tags}
+                        onChange={(value) => setFormData(prev => ({ ...prev, tags: value }))}
                         className="flex-1"
                     />
                 </div>
@@ -96,11 +224,15 @@ const EditStory = () => {
                 <div className="flex w-full gap-4">
                     <ImagePicker 
                         label="Cover Image"
+                        value={formData.coverImage}
+                        onImageChange={(file) => setFormData(prev => ({ ...prev, coverImage: file }))}
                         className="flex-1"
                     />
                     <Dropdown 
                         label="Status"
                         placeholder="Status"
+                        value={formData.status}
+                        onChange={(value) => setFormData(prev => ({ ...prev, status: value }))}
                         options={statusOptions}
                         className="flex-1"
                     />
@@ -117,33 +249,38 @@ const EditStory = () => {
                             />
                         </Link>
                     </div>
-                </div>
 
-                <ChapterTable
-                    data={[
-                        {
-                            id: 1,
-                            title: "The Moon that Can't be Seen",
-                            lastUpdated: "18 January 2024",
-                        },
-                        {
-                            id: 2,
-                            title: "Silent Night",
-                            lastUpdated: "20 January 2024",
-                        },
-                    ]}
-                />
+                    <ChapterTable
+                        data={chaptersData}
+                        onEdit={handleEditChapter}
+                        onDelete={(chapter) => {
+                            setSelectedChapterId(chapter.id.toString())
+                            setIsDeleteChapterModalOpen(true)
+                        }}
+                    />
+                </div>
 
                 <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
                     <Link href={`/stories/${id}`}>
                         <SecondaryButton label="Cancel" />
                     </Link>
                     <MainButton 
-                        label="Save"
+                        label={saving ? "Saving..." : "Save"}
                         variant="orange"
+                        onClick={handleSave}
                     />
                 </div>
             </div>
+
+            <ConfirmationModal 
+                isOpen={isDeleteChapterModalOpen}
+                onClose={() => setIsDeleteChapterModalOpen(false)}
+                onConfirm={handleDeleteChapter}
+                title="Delete Chapter"
+                message="Are you sure you want to delete this chapter?"
+                confirmText="Yes, Delete"
+                cancelText="Cancel"
+            />
         </div>
     )
 }
