@@ -29,7 +29,7 @@ const EditStory = () => {
         title: '',
         author: '',
         synopsis: '',
-        category: '',
+        category: 'Financial',
         tags: [] as string[],
         status: 'Draft',
         coverImage: null as File | null
@@ -176,6 +176,7 @@ const EditStory = () => {
                         onChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
                         options={categoryOptions}
                         className="flex-1"
+                        hideEmptyOption
                     />
                     <TagsInput 
                         label="Tags / Keywords"
@@ -200,6 +201,7 @@ const EditStory = () => {
                         onChange={(value) => setFormData(prev => ({ ...prev, status: value }))}
                         options={statusOptions}
                         className="flex-1"
+                        hideEmptyOption
                     />
                 </div>
 

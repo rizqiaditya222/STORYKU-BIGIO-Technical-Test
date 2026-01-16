@@ -26,7 +26,7 @@ const AddStory = () => {
         title: '',
         author: '',
         synopsis: '',
-        category: '',
+        category: 'Financial',
         tags: [] as string[],
         status: 'Draft',
         coverImage: null as File | null
@@ -83,7 +83,7 @@ const AddStory = () => {
                 title: parsedData.title || '',
                 author: parsedData.author || '',
                 synopsis: parsedData.synopsis || '',
-                category: parsedData.category || '',
+                category: parsedData.category || 'Financial',
                 tags: parsedData.tags || '',
                 status: parsedData.status || 'Draft'
             }))
@@ -196,6 +196,7 @@ const AddStory = () => {
                         onChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
                         options={categoryOptions}
                         className="flex-1"
+                        hideEmptyOption
                     />
                     <TagsInput 
                         label="Tags / Keywords"
@@ -220,6 +221,7 @@ const AddStory = () => {
                         onChange={(value) => setFormData(prev => ({ ...prev, status: value }))}
                         options={statusOptions}
                         className="flex-1"
+                        hideEmptyOption
                     />
                 </div>
 
