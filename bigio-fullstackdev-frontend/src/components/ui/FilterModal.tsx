@@ -15,18 +15,16 @@ const FilterModal = ({ isOpen, onClose, onFilter }: FilterModalProps) => {
   const [category, setCategory] = React.useState('')
   const [status, setStatus] = React.useState('')
 
-  const categoryOptions = [
-    { value: 'romance', label: 'Romance' },
-    { value: 'drama', label: 'Drama' },
-    { value: 'fantasy', label: 'Fantasy' },
-    { value: 'teen-fiction', label: 'Teen Fiction' },
-    { value: 'non-fiction', label: 'Non Fiction' }
-  ]
+const categoryOptions = [
+    { value: 'Financial', label: 'Financial' },
+    { value: 'Technology', label: 'Technology' },
+    { value: 'Health', label: 'Health' }
+]
 
-  const statusOptions = [
-    { value: 'publish', label: 'Publish' },
-    { value: 'draft', label: 'Draft' }
-  ]
+const statusOptions = [
+    { value: 'Publish', label: 'Publish' },
+    { value: 'Draft', label: 'Draft' }
+]
 
   const handleReset = () => {
     setCategory('')

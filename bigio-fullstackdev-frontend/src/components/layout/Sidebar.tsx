@@ -24,7 +24,14 @@ const Sidebar = () => {
   return (
     <aside className="w-64 bg-white border-r border-gray-200 min-h-screen">
       <div className="p-6 flex items-center justify-center">
-        <Image src="/images/storyku_logo.png" alt="Storyku Logo" width={150} height={50} />
+        <Image 
+          src="/images/storyku_logo.png" 
+          alt="Storyku Logo" 
+          width={150} 
+          height={50}
+          loading="eager"
+          style={{ height: 'auto' }}
+        />
       </div>
       
       <nav className="space-y-2">

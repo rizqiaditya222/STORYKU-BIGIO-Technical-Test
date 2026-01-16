@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 
 interface Story {
+  id: string
   no: number
   title: string
   writers: string

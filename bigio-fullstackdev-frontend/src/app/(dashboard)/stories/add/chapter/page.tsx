@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import Image from 'next/image'
 import MainButton from '@/components/ui/MainButton'
 import SecondaryButton from '@/components/ui/SecondaryButton'
@@ -8,7 +10,35 @@ import FormField from '@/components/ui/FormField'
 import QuillEditor from '@/components/ui/QuillEditor'
 
 const AddChapter = () => {
+    const router = useRouter()
+    const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
+
+    const handleSave = () => {
+        if (!title.trim()) {
+            alert('Chapter title is required')
+            return
+        }
+
+        const existingChapters = localStorage.getItem('tempChapters')
+        const chapters = existingChapters ? JSON.parse(existingChapters) : []
+        
+        const newChapter = {
+            id: Date.now(),
+            title: title.trim(),
+            content: content,
+            lastUpdated: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })
+        }
+        
+        chapters.push(newChapter)
+        localStorage.setItem('tempChapters', JSON.stringify(chapters))
+        
+        router.push('/stories/add')
+    }
+
+    const handleCancel = () => {
+        router.push('/stories/add')
+    }
 
     return (
         <div className="flex h-full w-full flex-col gap-4">
@@ -36,23 +66,27 @@ const AddChapter = () => {
                 Add Chapter
             </h1>
 
-            <div className="flex w-24 cursor-pointer items-center justify-center gap-2 rounded-full bg-gray-200 py-2 hover:bg-gray-300">
-                <Image
-                    src="/icons/arrow-icon.svg"
-                    alt="Back"
-                    width={20}
-                    height={20}
-                />
-                <p className="pr-2 text-sm font-semibold text-gray-700">
-                    Back
-                </p>
-            </div>
+            <Link href="/stories/add">
+                <div className="flex w-24 cursor-pointer items-center justify-center gap-2 rounded-full bg-gray-200 py-2 hover:bg-gray-300">
+                    <Image
+                        src="/icons/arrow-icon.svg"
+                        alt="Back"
+                        width={20}
+                        height={20}
+                    />
+                    <p className="pr-2 text-sm font-semibold text-gray-700">
+                        Back
+                    </p>
+                </div>
+            </Link>
 
             <div className="mt-6 flex w-full flex-col gap-6 rounded-xl bg-white p-6 shadow-sm">
                 <div className="w-full">
                     <FormField
                         label="Title"
                         placeholder="Title"
+                        value={title}
+                        onChange={setTitle}
                         className="flex-1"
                     />
                 </div>
@@ -69,10 +103,14 @@ const AddChapter = () => {
 
             </div>
                 <div className='flex w-full justify-end gap-4 pt-4'>
-                    <SecondaryButton label="Cancel" />
+                    <SecondaryButton 
+                        label="Cancel" 
+                        onClick={handleCancel}
+                    />
                     <MainButton 
                         label="Save"
                         variant="orange"
+                        onClick={handleSave}
                     />
                 </div>
         </div>
