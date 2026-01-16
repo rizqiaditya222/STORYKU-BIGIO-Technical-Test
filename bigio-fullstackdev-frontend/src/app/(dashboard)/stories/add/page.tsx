@@ -129,7 +129,7 @@ const AddStory = () => {
 
             const chaptersData = chapters.map((chapter, index) => ({
                 title: chapter.title,
-                content: chapter.content,
+                content: chapter.content ?? '',
                 chapterOrder: index + 1
             }))
 
