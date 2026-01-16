@@ -28,7 +28,6 @@ const EditStory = () => {
 
     return (
         <div className="flex h-full w-full flex-col gap-4">
-            {/* Breadcrumb */}
             <div className="flex items-center gap-3">
                 <p className="text-sm text-gray-400">Stories Management</p>
                 <Image
@@ -41,12 +40,10 @@ const EditStory = () => {
                 <p className="text-sm text-[#41A3B7]">Edit Story</p>
             </div>
 
-            {/* Title */}
             <h1 className="text-3xl font-bold text-gray-700">
                 Edit Story
             </h1>
 
-            {/* Back Button */}
             <Link href={`/stories/${id}`}>
                 <div className="flex w-24 cursor-pointer items-center justify-center gap-2 rounded-full bg-gray-200 py-2 hover:bg-gray-300">
                     <Image
@@ -61,9 +58,7 @@ const EditStory = () => {
                 </div>
             </Link>
 
-            {/* Form */}
             <div className="mt-6 flex w-full flex-col gap-6 rounded-xl bg-white p-6 shadow-sm">
-                {/* Title & Author */}
                 <div className="flex w-full gap-4">
                     <FormField 
                         label="Title"
@@ -77,7 +72,6 @@ const EditStory = () => {
                     />
                 </div>
 
-                {/* Synopsis */}
                 <FormField 
                     label="Synopsis"
                     type="textarea"
@@ -85,7 +79,6 @@ const EditStory = () => {
                     rows={8}
                 />
 
-                {/* Category & Tags */}
                 <div className="flex w-full gap-4">
                     <Dropdown 
                         label="Category"
@@ -100,7 +93,6 @@ const EditStory = () => {
                     />
                 </div>
 
-                {/* Cover Image & Status */}
                 <div className="flex w-full gap-4">
                     <ImagePicker 
                         label="Cover Image"
@@ -114,7 +106,6 @@ const EditStory = () => {
                     />
                 </div>
 
-                {/* Chapter List */}
                 <div className="mt-4">
                     <div className="flex justify-between items-center mb-4">
                         <p className="font-bold text-gray-700 text-md">Chapter List</p>
@@ -128,7 +119,6 @@ const EditStory = () => {
                     </div>
                 </div>
 
-                {/* table */}
                 <ChapterTable
                     data={[
                         {
@@ -144,7 +134,6 @@ const EditStory = () => {
                     ]}
                 />
 
-                {/* Action Buttons */}
                 <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
                     <Link href={`/stories/${id}`}>
                         <SecondaryButton label="Cancel" />

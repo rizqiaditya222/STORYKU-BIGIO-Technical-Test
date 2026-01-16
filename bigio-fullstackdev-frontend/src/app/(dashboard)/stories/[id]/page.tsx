@@ -11,7 +11,6 @@ const StoryDetail = () => {
     const params = useParams()
     const id = params.id
 
-    // Mock data - replace with actual data fetching
     const story = {
         title: "The Moon that Can't be Seen",
         author: "Rara",
@@ -28,7 +27,6 @@ const StoryDetail = () => {
 
     return (
         <div className="flex h-full w-full flex-col gap-4">
-            {/* Breadcrumb */}
             <div className="flex items-center gap-3">
                 <p className="text-sm text-gray-400">Stories Management</p>
                 <Image
@@ -41,12 +39,10 @@ const StoryDetail = () => {
                 <p className="text-sm text-[#41A3B7]">Story Detail</p>
             </div>
 
-            {/* Title */}
             <h1 className="text-3xl font-bold text-gray-700">
                 Story Detail
             </h1>
 
-            {/* Back Button */}
             <Link href="/stories">
                 <div className="flex w-24 cursor-pointer items-center justify-center gap-2 rounded-full bg-gray-200 py-2 hover:bg-gray-300">
                     <Image
@@ -61,9 +57,7 @@ const StoryDetail = () => {
                 </div>
             </Link>
 
-            {/* Content */}
             <div className="mt-6 flex w-full flex-col gap-6 rounded-xl bg-white p-6 shadow-sm">
-                {/* Title & Author - Read Only */}
                 <div className="flex w-full gap-4">
                     <div className="flex-1">
                         <p className="font-bold text-gray-700 text-md mb-2">Title</p>
@@ -75,13 +69,11 @@ const StoryDetail = () => {
                     </div>
                 </div>
 
-                {/* Synopsis - Read Only */}
                 <div>
                     <p className="font-bold text-gray-700 text-md mb-2">Synopsis</p>
                     <p className="text-gray-600">{story.synopsis}</p>
                 </div>
 
-                {/* Category & Tags - Read Only */}
                 <div className="flex w-full gap-4">
                     <div className="flex-1">
                         <p className="font-bold text-gray-700 text-md mb-2">Category</p>
@@ -99,7 +91,6 @@ const StoryDetail = () => {
                     </div>
                 </div>
 
-                {/* Status - Read Only */}
                 <div className="flex w-full gap-4">
                     <div className="flex-1">
                         <p className="font-bold text-gray-700 text-md mb-2">Status</p>
@@ -113,7 +104,6 @@ const StoryDetail = () => {
                     </div>
                 </div>
 
-                {/* Chapters List */}
                 <div className="mt-4">
                     <div className="flex justify-between items-center mb-4">
                         <p className="font-bold text-gray-700 text-md">Chapters</p>
@@ -141,7 +131,6 @@ const StoryDetail = () => {
                     </div>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
                     <Link href="/stories">
                         <SecondaryButton label="Back" />
