@@ -30,12 +30,6 @@ exports.getAllStories = async (req, res, next) => {
       where,
       include: [
         {
-          model: db.Tag,
-          as: 'tags',
-          attributes: ['id', 'name'],
-          through: { attributes: [] }
-        },
-        {
           model: db.Chapter,
           as: 'chapters',
           attributes: ['id']
@@ -68,12 +62,6 @@ exports.getStoryById = async (req, res, next) => {
     
     const story = await db.Story.findByPk(id, {
       include: [
-        {
-          model: db.Tag,
-          as: 'tags',
-          attributes: ['id', 'name'],
-          through: { attributes: [] }
-        },
         {
           model: db.Chapter,
           as: 'chapters',
@@ -117,24 +105,10 @@ exports.createStory = async (req, res, next) => {
       author,
       synopsis,
       category,
+      tags: tags || [],
       status: status || 'Draft',
       coverImage: req.file ? req.file.filename : null
     }, { transaction });
-    
-    if (tags && tags.length > 0) {
-      const tagInstances = await Promise.all(
-        tags.map(async (tagName) => {
-          const [tag] = await db.Tag.findOrCreate({
-            where: { name: tagName },
-            defaults: { name: tagName },
-            transaction
-          });
-          return tag;
-        })
-      );
-      
-      await story.setTags(tagInstances, { transaction });
-    }
     
     if (chapters && chapters.length > 0) {
       const chaptersData = chapters.map((chapter, index) => ({
@@ -151,7 +125,6 @@ exports.createStory = async (req, res, next) => {
     
     const createdStory = await db.Story.findByPk(story.id, {
       include: [
-        { model: db.Tag, as: 'tags', through: { attributes: [] } },
         { model: db.Chapter, as: 'chapters' }
       ]
     });
@@ -202,30 +175,15 @@ exports.updateStory = async (req, res, next) => {
       author,
       synopsis,
       category,
+      tags: tags || story.tags,
       status,
       coverImage: req.file ? req.file.filename : story.coverImage
     }, { transaction });
-    
-    if (tags) {
-      const tagInstances = await Promise.all(
-        tags.map(async (tagName) => {
-          const [tag] = await db.Tag.findOrCreate({
-            where: { name: tagName },
-            defaults: { name: tagName },
-            transaction
-          });
-          return tag;
-        })
-      );
-      
-      await story.setTags(tagInstances, { transaction });
-    }
     
     await transaction.commit();
     
     const updatedStory = await db.Story.findByPk(id, {
       include: [
-        { model: db.Tag, as: 'tags', through: { attributes: [] } },
         { model: db.Chapter, as: 'chapters' }
       ]
     });

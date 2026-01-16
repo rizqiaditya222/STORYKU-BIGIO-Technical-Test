@@ -19,13 +19,16 @@ exports.createStoryValidator = [
       if (typeof value === 'string') {
         try {
           const parsed = JSON.parse(value);
-          return Array.isArray(parsed);
+          return Array.isArray(parsed) && parsed.every(tag => typeof tag === 'string');
         } catch (e) {
           return false;
         }
       }
-      return Array.isArray(value);
-    }).withMessage('Tags must be an array or valid JSON array string'),
+      if (Array.isArray(value)) {
+        return value.every(tag => typeof tag === 'string');
+      }
+      return false;
+    }).withMessage('Tags must be an array of strings'),
   body('chapters')
     .optional()
     .custom((value) => {

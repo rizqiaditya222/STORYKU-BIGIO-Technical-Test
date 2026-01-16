@@ -35,6 +35,11 @@ module.exports = {
         defaultValue: 'Draft',
         allowNull: false
       },
+      tags: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        allowNull: true,
+        defaultValue: []
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

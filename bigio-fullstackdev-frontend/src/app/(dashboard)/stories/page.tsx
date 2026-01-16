@@ -96,7 +96,7 @@ const Stories = () => {
         title: story.title,
         writers: story.author,
         category: story.category,
-        keywords: story.tags?.map(tag => tag.name) || [],
+        keywords: story.tags || [],
         status: story.status as 'Draft' | 'Publish'
     }))
 

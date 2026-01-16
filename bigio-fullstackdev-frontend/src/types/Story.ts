@@ -1,5 +1,4 @@
 import { Chapter } from "./Chapter";
-import { Tag } from "./Tag";
 
 export interface Story {
   id: string;
@@ -9,7 +8,7 @@ export interface Story {
   category: 'Financial' | 'Technology' | 'Health';
   coverImage?: string;
   status: 'Draft' | 'Publish';
-  tags?: Tag[];
+  tags?: string[];
   chapters?: Chapter[];
   createdAt: string;
   updatedAt: string;

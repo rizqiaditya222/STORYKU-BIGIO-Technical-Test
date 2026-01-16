@@ -28,6 +28,11 @@ module.exports = (sequelize, DataTypes) => {
     status: {
       type: DataTypes.ENUM('Draft', 'Publish'),
       defaultValue: 'Draft'
+    },
+    tags: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: true,
+      defaultValue: []
     }
   }, {
     tableName: 'stories',
