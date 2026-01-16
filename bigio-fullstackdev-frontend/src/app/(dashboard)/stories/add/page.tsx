@@ -269,7 +269,7 @@ const AddStory = () => {
                 />
             </div>
             
-            <div className='flex w-full justify-end gap-4 pt-4 border-gray-200'>
+            <div className='flex w-full justify-end gap-4 pt-4 border-gray-200 py-12'>
                 <SecondaryButton 
                     label="Cancel" 
                     onClick={() => setIsConfirmModalOpen(true)}
