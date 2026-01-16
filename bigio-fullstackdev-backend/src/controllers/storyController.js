@@ -102,7 +102,15 @@ exports.createStory = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
   
   try {
-    const { title, author, synopsis, category, tags, status, chapters } = req.body;
+    let { title, author, synopsis, category, tags, status, chapters } = req.body;
+    
+    if (typeof tags === 'string') {
+      tags = JSON.parse(tags);
+    }
+    
+    if (typeof chapters === 'string') {
+      chapters = JSON.parse(chapters);
+    }
     
     const story = await db.Story.create({
       title,
