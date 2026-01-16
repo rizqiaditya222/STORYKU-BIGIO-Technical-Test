@@ -15,7 +15,30 @@ exports.createStoryValidator = [
     .isIn(['Draft', 'Publish']).withMessage('Invalid status'),
   body('tags')
     .optional()
-    .isArray().withMessage('Tags must be an array')
+    .custom((value) => {
+      if (typeof value === 'string') {
+        try {
+          const parsed = JSON.parse(value);
+          return Array.isArray(parsed);
+        } catch (e) {
+          return false;
+        }
+      }
+      return Array.isArray(value);
+    }).withMessage('Tags must be an array or valid JSON array string'),
+  body('chapters')
+    .optional()
+    .custom((value) => {
+      if (typeof value === 'string') {
+        try {
+          const parsed = JSON.parse(value);
+          return Array.isArray(parsed);
+        } catch (e) {
+          return false;
+        }
+      }
+      return Array.isArray(value);
+    }).withMessage('Chapters must be an array or valid JSON array string')
 ];
 
 exports.updateStoryValidator = [
